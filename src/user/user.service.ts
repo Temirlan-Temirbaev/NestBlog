@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
+import { Role } from "../entities/role.entity"
 import { User } from "../entities/user.entity"
 import { BanUserDto } from "./dto/ban-user.dto"
 import { CreateUserDto } from "./dto/create-user.dto"
@@ -9,12 +10,17 @@ import { UnbanUserDto } from "./dto/unban-user.dto"
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(User) private userModel: Repository<User>) {}
+  constructor(@InjectRepository(User) private userModel: Repository<User>, @InjectRepository(Role) private roleModel: Repository<Role>) {}
 
   async createUser(dto: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(dto.password, 4)
-    const user = await this.userModel.create({ ...dto, password: hashedPassword })
-    return user
+    const user = await this.userModel.create({
+      username: dto.username,
+      password: hashedPassword,
+    })
+    const role = await this.roleModel.findOneBy({ value: "user" })
+    user.role = role
+    return await this.userModel.save(user)
   }
 
   async banUser(dto: BanUserDto) {
