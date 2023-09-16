@@ -33,8 +33,7 @@ export class AuthService {
     if (!user) {
       throw new HttpException("Wrong username or password", HttpStatus.NOT_FOUND)
     }
-
-    const isValidPassword = await bcrypt.compare(user.password, dto.password)
+    const isValidPassword = await bcrypt.compare(dto.password, user.password)
 
     if (!isValidPassword) {
       throw new HttpException("Wrong password", HttpStatus.BAD_REQUEST)

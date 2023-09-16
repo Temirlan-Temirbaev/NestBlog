@@ -1,11 +1,12 @@
 import { Module } from "@nestjs/common"
 import { ConfigModule } from "@nestjs/config"
 import { TypeOrmModule } from "@nestjs/typeorm"
+import { Role } from "./entities/role.entity"
 import { User } from "./entities/user.entity"
+import { AuthModule } from "./auth/auth.module"
+import { RoleModule } from "./role/role.module"
+import { JwtModule } from "./jwt/jwt.module"
 import { UserModule } from "./user/user.module"
-import { AuthModule } from './auth/auth.module';
-import { JwtModule } from './jwt/jwt.module';
-import { JwtModule } from './jwt/jwt.module';
 
 @Module({
   imports: [
@@ -17,12 +18,13 @@ import { JwtModule } from './jwt/jwt.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User],
+      entities: [User, Role],
       synchronize: true,
     }),
     UserModule,
     AuthModule,
     JwtModule,
+    RoleModule,
   ],
 })
 export class AppModule {}
